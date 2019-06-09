@@ -1,10 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>VueJS NodeJS and Express  Todo App</title>
-  </head>
-  <body>
-    <h1>Todo App</h1>
-  </body>
+<head>
+    <title>従業員タスク管理</title>
+    <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="client.js"></script>
+</head>
+<body>
+    <div class="container">
+      <h1>従業員タスク管理</h1>
+
+      <div class="form-group">
+          <input type="text" name="name" class="new-todo-text form-control" placeholder="タスク/担当者名を入力。(例)宴会の仕込みをする/住野">
+          <button type="submit" class="btn btn-default" onclick="createTodo()">追加ボタン</button>
+      </div>
+
+      <h2>現在のタスク</h2>
+      <table class="table table-striped task-table">
+          <thead>
+              <th>タスク内容</th><th>&nbsp;</th>
+          </thead>
+
+          <tbody class="todos">
+              <tr class="todo template" style="display: none;">
+                  <td>
+                      <span class="text"></span>
+                      <span class="id" style="display: none;"></span>
+                  </td>
+                  <td>
+                      <button onclick="deleteTodo(this)">Delete</button>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+    </div>
+</body>
 </html>

@@ -1,43 +1,56 @@
-//todo-app/server.js
-/* jslint node: true */
-'use strict'
+const express  = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-var express = require('express')
-var morgan = require('morgan')
-var path = require('path')
-var app = express()
-var mongoose = require('mongoose')
-var bodyParser = require('body-parser')
+app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 
-// Require configuration file defined in app/Config.js
-var config = require('./app/Config')
-// Connect to database
-mongoose.connect(config.DB)
-// Sends static files  from the public path directory
-app.use(express.static(path.join(__dirname, '/public')))
+mongoose.connect('mongodb://localhost/mydb');
 
-// Use morgan to log request in dev mode
-app.use(morgan('dev'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-var port = config.APP_PORT || 4000
-app.listen(port) // Listen on port defined in config file
+const Todo = mongoose.model('Todo', {
+    text : String
+});
 
-console.log('App listening on port ' + port)
-var todoRoutes = require('./app/Routes')
-//  Use routes defined in Route.js and prefix with todo
-app.use('/api', todoRoutes)
-app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:' + port)
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
-    // Pass to next layer of middleware
-    next()
-})
-// Server index.html page when request to the root is made
-app.get('/', function (req, res, next) {
-    res.sendfile('./public/index.html')
-})
+app.get('/api/todos', (req, res) => {
+    Todo.find()
+        .then((todos) => {
+            res.json(todos);
+        })
+        .catch((err) => {
+            res.send(err);
+        })
+});
+
+app.post('/api/todos', (req, res) => {
+    const todo = req.body;
+    Todo.create({
+            text : todo.text,
+        })
+        .then((todo) => {
+            res.json(todo);
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+});
+
+app.delete('/api/todos/:todo_id', (req, res) => {
+    Todo.remove({
+            _id : req.params.todo_id
+        })
+        .then((todo) => {
+           res.send(todo); 
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+});
+
+app.get('/', (req, res) => {
+    res.sendfile('./public/index.html');
+});
+
+app.listen(3000, () => {
+    console.log("My app listening on port 3000!");
+});
